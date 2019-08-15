@@ -9,7 +9,7 @@ var itemName = ['受付No','受付日時','受付所属','受付者','受付手�
                 '回答添付資料','別件で回答済み','回答書送付','追跡予定日','追跡作業日',
                 '追跡検証','上申区分','上申確認','備考','承認日時','同日ID'];  // 項目見出し
 var trPoint = [6,12,13,14,16,18,19,20,23,28,33,36,37];                         // 改行項目番号
-var inpSize = [25,16,10,15,15,8,5,15,15,25,8,30,177,175,3,100,3,150,10,175,15,15,15,10,16,5,10,10,25,25,10,10,10,5,6,5,176,16,5];
+var inpSize = [24,16,24,20,8,8,5,15,17,25,8,37,177,175,3,148,3,155,10,175,65,33,33,10,16,5,10,10,37,25,10,10,10,5,6,5,176,16,5];
 var mustItem = ['questionDtTm','questionBelonging','questionStaff','belonging','operationName','requirement'];  // 必須入力項目ID
 var maxLeng = [19,,25,25,6,6,4,50,25,25,6,50,255,999,1,255,1,255,,999,50,25,25,,,11,,,255,128,,,,2,5,2,999,,11];
 function go_ReLoad() {
@@ -105,7 +105,7 @@ function updPage(myNo) {
   }
   var strDoc = '';
   if (!rs.EOF){
-    strDoc += '<tr><td><table><tr><td bgcolor="#CCCCFF">' + itemName[0] + '</td><td>' + rs(0).Value + '</td>';
+    strDoc += '<tr><td><table><tr><td bgcolor="#FFCCCC">' + itemName[0] + '</td><td>&nbsp;' + rs(0).Value + '&nbsp;</td>';
     for ( var i = 1; i < rs.Fields.Count; i++ ) {
       if (trPoint.indexOf(i) >= 0) {
         strDoc += '<tr><td><table><tr>';
