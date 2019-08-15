@@ -30,15 +30,18 @@ function setList() {
     return;
   }
   var strDoc = '';
+  var hitFlg = 0;
   strDoc += '<td><select name="selGYM" onchange="go_ReLoad()" align="left">';
   while (!rs.EOF){
     if (rs(0).value == selSec) {
       strDoc += '<option value="' + rs(0).value + '" selected>' + rs(0).value + '</option>';
+      hitFlg = 1;
     } else {
       strDoc += '<option value="' + rs(0).value + '">' + rs(0).value + '</option>';
     }
     rs.MoveNext();
   }
+  if (hitFlg == 0) { selSec = '案件管理台帳'; }    // 業務削除されたので初期値に戻す
   strDoc += '</select><a href="#" onClick="insPage()">新規追加</a></td>';
   rs.Close();
   $('#idx01').replaceWith('<div id="idx01">' + strDoc + '</div>');
@@ -166,7 +169,10 @@ function updPage(myNo) {
 function insPage() {
   var cn = new ActiveXObject('ADODB.Connection');
   var rs = new ActiveXObject('ADODB.Recordset');
-  var mySql = "SELECT * FROM MONPYO LIMIT 1";
+// var mySql = "SELECT * FROM MONPYO LIMIT 1";
+  var mySql = "SELECT COLUMN_COMMENT,COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH"
+            + " FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '" + tSchema
+            + "' AND TABLE_NAME = 'monpyo' ORDER BY ORDINAL_POSITION";
   cn.Open(tDatSrc);
   try {
     rs.Open(mySql, cn);
@@ -177,34 +183,38 @@ function insPage() {
     return;
   }
   var strDoc = '';
-  if (rs.EOF){ alert('テーブル初期状態の為、処理できません！'); return; }
-  for ( var i = 0; i < rs.Fields.Count; i++ ) {
+  var i = 0;
+  while (!rs.EOF){
+    // 改行
     if (trPoint.indexOf(i) >= 0 || i == 0) {
       strDoc += '<tr><td><table><tr>';
     }
-    strDoc += '<td bgcolor="#CCFFFF">' + itemName[i] + '</td>';
-    if (rs(i).Type == 133) {
+    strDoc += '<td bgcolor="#CCFFFF">' + rs(0).Value + '</td>';
+    if (rs(2).Value == 'date') {
       strDoc += '<td style="border-style: none;"><input type="date" size="10" id="'
-             + rs(i).Name + '" value=""></td>';
-    } else if (rs(i).Type == 135) {
+             + rs(1).Value + '" value=""></td>';
+    } else if (rs(2).Value == 'datetime') {
       strDoc += '<td style="border-style: none;"><input type="datetime" size="16" id="'
-             + rs(i).Name + '" value=""></td>';
-    } else if (rs(i).Type == 203) {
+             + rs(1).Value + '" value=""></td>';
+    } else if (rs(2).Value == 'text') {
       strDoc += '<td style="border-style: none;"><textarea rows="3" cols="' + inpSize[i] + '" id="'
-             + rs(i).Name + '"></textarea></td>';
-    } else if (rs(i).Type == 3) {
+             + rs(1).Value + '"></textarea></td>';
+    } else if (rs(2).Value == 'int') {
       strDoc += '<td style="border-style: none;"><input type="number" size="' + inpSize[i] + '" id="'
-             + rs(i).Name + '" value=""></td>';
-    } else if (rs(i).Type == 16) {
+             + rs(1).Value + '" value=""></td>';
+    } else if (rs(2).Value == 'tinyint') {
       strDoc += '<td style="border-style: none; padding: 0px 20px;}"><input type="checkbox" id="'
-             + rs(i).Name + '" value=1></td>';
+             + rs(1).Value + '" value=1></td>';
     } else {
       strDoc += '<td style="border-style: none;"><input type="text" size="' + inpSize[i] + '" id="'
-             + rs(i).Name + '" value="" maxlength="' + maxLeng[i] + '"></td>';
+             + rs(1).Value + '" value="" maxlength="' + rs(3).Value + '"></td>';
     }
+    // 行終端
     if (trPoint.indexOf(i + 1) >= 0) {
       strDoc += '</tr></table></td></tr>';
     }
+    i += 1;
+    rs.MoveNext();
   }
   $('#lst02').replaceWith('<tbody id="lst02">' + strDoc + '</tbody>');
   rs.Close();
