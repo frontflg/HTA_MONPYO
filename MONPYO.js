@@ -31,7 +31,7 @@ function setList() {
   }
   var strDoc = '';
   var hitFlg = 0;
-  strDoc += '<td><select name="selGYM" onchange="go_ReLoad()" align="left">';
+  strDoc += '<td><select id="selGYM" onchange="go_ReLoad()" align="left">';
   while (!rs.EOF){
     if (rs(0).value == selSec) {
       strDoc += '<option value="' + rs(0).value + '" selected>' + rs(0).value + '</option>';
@@ -79,6 +79,7 @@ function setList() {
     rs.MoveNext();
   }
   $('#lst01').replaceWith('<tbody id="lst01">' + strDoc + '</tbody>');
+  if (hitFlg == 0) { $('#selGYM').val('案件管理台帳'); }
   rs.Close();
   cn.Close();
   rs = null;
@@ -392,7 +393,7 @@ function insRec() {
   var rs = new ActiveXObject('ADODB.Recordset');
   cn.Open(tDatSrc);
   try {
-    var rs   = cn.Execute(mySql);
+    var rs = cn.Execute(mySql);
     alert('対象レコード登録完了');
   } catch (e) {
     cn.Close();
@@ -406,6 +407,7 @@ function insRec() {
   cn.Close();
   rs = null;
   cn = null;
+  selSec = $(section).val();
   $('#li02').css('visibility','hidden');
   setList();
 }
